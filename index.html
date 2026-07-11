@@ -856,6 +856,8 @@
           val_sup1: "Entognatha",
           tipo_sup2: "Subphylum",
           val_sup2: "Hexapoda",
+          // EMI variabile per forma ecomorfologica: Epigei 1-8, Intermedi 10, Endogei 20
+          emi: "1-8 / 10 / 20",
           immagine: ["Suolo/Collembola1.jpg", "Suolo/Collembola2.jpg"],
         },
         {
@@ -866,6 +868,7 @@
           val_sup1: "Entognatha",
           tipo_sup2: "Subphylum",
           val_sup2: "Hexapoda",
+          emi: "20",
           immagine: ["Suolo/Protura1.jpg", "Suolo/Protura2.jpg"],
         },
         {
@@ -876,6 +879,8 @@
           val_sup1: "Entognatha",
           tipo_sup2: "Subphylum",
           val_sup2: "Hexapoda",
+          // Campodeiformi/Japigidae: 20
+          emi: "20",
           immagine: ["Suolo/Diplura1.jpg", "Suolo/Diplura2.jpg"],
         },
         {
@@ -886,6 +891,7 @@
           val_sup1: "Insecta",
           tipo_sup2: "Subphylum",
           val_sup2: "Hexapoda",
+          emi: "",
           immagine: "Suolo/Ditteri.jpg",
         },
         {
@@ -896,6 +902,7 @@
           val_sup1: "Insecta",
           tipo_sup2: "Subphylum",
           val_sup2: "Hexapoda",
+          emi: "",
           immagine: "Suolo/Coleoptera.jpg",
         },
         {
@@ -906,6 +913,8 @@
           val_sup1: "Myriapoda",
           tipo_sup2: "Phylum",
           val_sup2: "Arthropoda",
+          // Scolopendromorfi: 10, Geofilomorfi: 20
+          emi: "10 / 20",
           immagine: ["Suolo/Chilopoda1.jpg", "Suolo/Chilopoda2.jpg"],
         },
         {
@@ -916,6 +925,7 @@
           val_sup1: "Myriapoda",
           tipo_sup2: "Phylum",
           val_sup2: "Arthropoda",
+          emi: "10-20",
           immagine: ["Suolo/Diplopoda1.jpg", "Suolo/Diplopoda2.jpg"],
         },
         {
@@ -926,6 +936,7 @@
           val_sup1: "Myriapoda",
           tipo_sup2: "Phylum",
           val_sup2: "Arthropoda",
+          emi: "20",
           immagine: ["Suolo/Pauropoda1.jpg", "Suolo/Pauropoda2.jpg"],
         },
         {
@@ -936,6 +947,7 @@
           val_sup1: "Myriapoda",
           tipo_sup2: "Phylum",
           val_sup2: "Arthropoda",
+          emi: "20",
           // ATTENZIONE: sul disco i due file hanno grafie diverse (Simphyla2 vs Symphila1)
           immagine: ["Suolo/Symphila1.jpg", "Suolo/Simphyla2.jpg"],
         },
@@ -947,6 +959,7 @@
           val_sup1: "Malacostraca",
           tipo_sup2: "Subphylum",
           val_sup2: "Crustacea",
+          emi: "10",
           immagine: "Suolo/Isopoda.jpg",
         },
         {
@@ -957,6 +970,7 @@
           val_sup1: "Arachnida",
           tipo_sup2: "Subphylum",
           val_sup2: "Chelicerata",
+          emi: "20",
           immagine: "Suolo/Acari.jpg",
         },
         {
@@ -967,6 +981,7 @@
           val_sup1: "Arachnida",
           tipo_sup2: "Subphylum",
           val_sup2: "Chelicerata",
+          emi: "20",
           immagine: "Suolo/Pseudoscorpiones.jpg",
         },
       ];
@@ -1178,7 +1193,7 @@
             </div>
           `;
         } else if (livelloCorrente === 2 || livelloCorrente === 3) {
-          // LIVELLO 2 E 3: IDENTICA COMPILAZIONE COMPLETA (Rango preciso, sup 1, sup 2 e BMWP)
+          // LIVELLO 2 E 3: IDENTICA COMPILAZIONE COMPLETA (Rango preciso, sup 1, sup 2 e BMWP/EMI)
           let htmlCampi = `
             <div class="input-group">
                 <label for="inputTarget">Rango più preciso <span>(${cartaCorrente.tipo_preciso})</span></label>
@@ -1199,6 +1214,13 @@
               <div class="input-group">
                   <label for="inputBmwp">Punteggio BMWP</label>
                   <input type="text" id="inputBmwp" autocomplete="off" required placeholder="">
+              </div>
+            `;
+          } else if (cartaCorrente.habitat === "suolo") {
+            htmlCampi += `
+              <div class="input-group">
+                  <label for="inputEmi">Valore EMI</label>
+                  <input type="text" id="inputEmi" autocomplete="off" required placeholder="">
               </div>
             `;
           }
@@ -1257,6 +1279,8 @@
 
           let userBmwp = "";
           let bmwpError = false;
+          let userEmi = "";
+          let emiError = false;
 
           if (cartaCorrente.habitat === "fluviale") {
             userBmwp = document
@@ -1266,6 +1290,15 @@
             if (userBmwp !== cartaCorrente.bmwp.toLowerCase()) {
               rispCorretta = false;
               bmwpError = true;
+            }
+          } else if (cartaCorrente.habitat === "suolo") {
+            userEmi = document
+              .getElementById("inputEmi")
+              .value.trim()
+              .toLowerCase();
+            if (userEmi !== (cartaCorrente.emi || "").trim().toLowerCase()) {
+              rispCorretta = false;
+              emiError = true;
             }
           }
 
@@ -1284,6 +1317,9 @@
             if (cartaCorrente.habitat === "fluviale") {
               const stileBmwp = bmwpError ? "color:#ef4444" : "color:#065f46";
               erroreHtml += `<br>• Punteggio BMWP: <b style="${stileBmwp}">${cartaCorrente.bmwp}</b> (tu: <i>${userBmwp || "vuoto"}</i>)`;
+            } else if (cartaCorrente.habitat === "suolo") {
+              const stileEmi = emiError ? "color:#ef4444" : "color:#065f46";
+              erroreHtml += `<br>• Valore EMI: <b style="${stileEmi}">${cartaCorrente.emi || "N/D"}</b> (tu: <i>${userEmi || "vuoto"}</i>)`;
             }
             feedback.innerHTML = erroreHtml;
           }
