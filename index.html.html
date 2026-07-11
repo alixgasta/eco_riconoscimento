@@ -1,0 +1,1307 @@
+<!doctype html>
+<html lang="it">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sistematica & Tassonomia Rigida - Simulatore Multilivello</title>
+    <style>
+      :root {
+        --primary-fluviale: #0d47a1;
+        --bg-fluviale: #e3f2fd;
+        --primary-suolo: #5d4037;
+        --bg-suolo: #efebe9;
+        --primary-dark: #2c3e50;
+        --accent-green: #2e7d32;
+        --bg-green: #e8f5e9;
+        --text-color: #333333;
+        --border-color: #cbd5e1;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #f1f5f9;
+        color: var(--text-color);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        margin: 0;
+        padding: 20px;
+        box-sizing: border-box;
+      }
+
+      .card-container {
+        background-color: white;
+        border-radius: 16px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+        padding: 30px;
+        max-width: 600px;
+        width: 100%;
+        text-align: center;
+        transition: border 0.3s ease;
+      }
+
+      /* Stili Menu Iniziale */
+      .menu-title {
+        color: var(--primary-dark);
+        margin-bottom: 5px;
+        font-size: 1.8rem;
+        font-weight: 800;
+      }
+      .menu-subtitle {
+        font-size: 0.95rem;
+        color: #64748b;
+        margin-bottom: 25px;
+      }
+
+      .menu-section-title {
+        text-align: left;
+        font-size: 0.9rem;
+        font-weight: 700;
+        color: #475569;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin: 20px 0 10px 0;
+        padding-bottom: 5px;
+        border-bottom: 2px solid #e2e8f0;
+      }
+
+      .level-btn {
+        background-color: #ffffff;
+        border: 2px solid var(--border-color);
+        color: var(--primary-dark);
+        padding: 14px 18px;
+        margin: 8px 0;
+        border-radius: 10px;
+        font-size: 1rem;
+        font-weight: bold;
+        text-align: left;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        width: 100%;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+      }
+      .level-btn:hover {
+        border-color: var(--primary-dark);
+        background-color: #f8fafc;
+        transform: translateY(-1px);
+      }
+      .level-btn.btn-fluviale-theme:hover {
+        border-color: var(--primary-fluviale);
+        background-color: var(--bg-fluviale);
+      }
+      .level-btn.btn-suolo-theme:hover {
+        border-color: var(--primary-suolo);
+        background-color: var(--bg-suolo);
+      }
+      .level-btn span {
+        display: block;
+        font-size: 0.8rem;
+        font-weight: normal;
+        margin-top: 4px;
+        color: #64748b;
+      }
+      .level-btn:hover span {
+        color: #475569;
+      }
+
+      /* Area Sottomenu Ordini (Livello 2) */
+      .submenu-box {
+        background-color: #f8fafc;
+        border: 1px solid var(--border-color);
+        border-radius: 10px;
+        padding: 20px;
+        margin-top: 10px;
+        display: none;
+        text-align: left;
+      }
+      .submenu-category-title {
+        font-size: 0.85rem;
+        font-weight: bold;
+        color: #475569;
+        margin: 15px 0 8px 0;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .submenu-category-title:first-of-type {
+        margin-top: 0;
+      }
+      .order-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+        margin-bottom: 15px;
+      }
+      .order-btn {
+        background-color: #ffffff;
+        border: 1px solid #cbd5e1;
+        padding: 10px;
+        font-weight: 600;
+        font-size: 0.85rem;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.2s;
+        text-align: left;
+      }
+      .order-btn.fluviale-item:hover {
+        background-color: var(--bg-fluviale);
+        border-color: var(--primary-fluviale);
+        color: var(--primary-fluviale);
+      }
+      .order-btn.suolo-item:hover {
+        background-color: var(--bg-suolo);
+        border-color: var(--primary-suolo);
+        color: var(--primary-suolo);
+      }
+
+      /* Area di Gioco */
+      .game-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+      .back-btn {
+        background: #64748b;
+        color: white;
+        border: none;
+        padding: 8px 14px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: bold;
+        font-size: 0.85em;
+        transition: background 0.2s;
+      }
+      .back-btn:hover {
+        background: #475569;
+      }
+
+      .image-box {
+        width: 100%;
+        height: 280px;
+        background-color: #111827; /* sfondo scuro premium per foto microscopio */
+        border-radius: 12px;
+        margin-bottom: 20px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        overflow: hidden;
+        border: 2px solid #e2e8f0;
+        position: relative;
+      }
+      .image-box img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        object-position: center;
+      }
+
+      /* Placeholder elegante in SVG se l'immagine manca */
+      .placeholder-container {
+        color: #94a3b8;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+      }
+      .placeholder-container svg {
+        width: 64px;
+        height: 64px;
+        margin-bottom: 12px;
+        opacity: 0.7;
+      }
+      .placeholder-container span {
+        font-size: 0.9rem;
+        font-weight: 500;
+      }
+
+      .type-badge {
+        display: inline-block;
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-size: 0.8em;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+      .badge-fluviale {
+        background-color: var(--bg-fluviale);
+        color: var(--primary-fluviale);
+      }
+      .badge-suolo {
+        background-color: var(--bg-suolo);
+        color: var(--primary-suolo);
+      }
+      .badge-level {
+        background-color: var(--bg-green);
+        color: var(--accent-green);
+      }
+
+      .input-group {
+        margin-bottom: 15px;
+        text-align: left;
+      }
+      .input-group label {
+        display: block;
+        font-weight: 700;
+        margin-bottom: 6px;
+        font-size: 0.85rem;
+        color: #475569;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+      }
+      .input-group label span {
+        font-size: 0.8rem;
+        color: #64748b;
+        font-weight: 500;
+        text-transform: none;
+      }
+      .input-group input,
+      .input-group select {
+        width: 100%;
+        padding: 12px;
+        border: 2px solid #e2e8f0;
+        border-radius: 8px;
+        box-sizing: border-box;
+        font-size: 1rem;
+        transition: all 0.2s;
+        background-color: #f8fafc;
+      }
+      .input-group input:focus,
+      .input-group select:focus {
+        border-color: #3b82f6;
+        background-color: #ffffff;
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+      }
+
+      .btn {
+        width: 100%;
+        padding: 14px;
+        border: none;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-weight: bold;
+        cursor: pointer;
+        margin-top: 10px;
+        transition: all 0.2s;
+      }
+      .btn-check {
+        background-color: #10b981;
+        color: white;
+      }
+      .btn-check:hover {
+        background-color: #059669;
+      }
+      .btn-next {
+        background-color: #3b82f6;
+        color: white;
+        margin-top: 10px;
+      }
+      .btn-next:hover {
+        background-color: #2563eb;
+      }
+
+      #feedback {
+        margin-top: 20px;
+        padding: 16px;
+        border-radius: 10px;
+        font-weight: 600;
+        display: none;
+        line-height: 1.5;
+      }
+      .correct {
+        background-color: #ecfdf5;
+        color: #065f46;
+        border: 2px solid #a7f3d0;
+      }
+      .wrong {
+        background-color: #fef2f2;
+        color: #991b1b;
+        border: 2px solid #fca5a5;
+        text-align: left;
+      }
+
+      /* Statistiche di sessione */
+      .stats-panel {
+        margin-top: 15px;
+        font-size: 0.85rem;
+        color: #64748b;
+        display: flex;
+        justify-content: space-between;
+        padding: 8px 12px;
+        background-color: #f8fafc;
+        border-radius: 6px;
+        border: 1px dashed #cbd5e1;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="card-container" id="mainContainer">
+      <div id="mainMenu">
+        <h1 class="menu-title">Simulatore di Tassonomia</h1>
+        <p class="menu-subtitle">
+          Seleziona un percorso rigido per metterti alla prova
+        </p>
+
+        <div class="menu-section-title">
+          Livello 1: Identificazione dell'Ordine
+        </div>
+
+        <button
+          class="level-btn btn-fluviale-theme"
+          onclick="avviaLivello1('fluviale')"
+        >
+          Livello 1 (Fluviale) — Ordini Macrozoobenthos
+          <span>Scegli tra gli ordini fluviali con menu a tendina.</span>
+        </button>
+
+        <button
+          class="level-btn btn-suolo-theme"
+          onclick="avviaLivello1('suolo')"
+        >
+          Livello 1 (Suolo) — Ordini/Gruppi Pedofauna
+          <span>Scegli tra i gruppi edafici con menu a tendina.</span>
+        </button>
+
+        <div class="menu-section-title">Livello 2: Focus Target</div>
+
+        <button class="level-btn" onclick="mostraSubmenuOrdini()">
+          Livello 2 — Focus Ordine Specifico
+          <span
+            >Scegli un ordine e compila l'intera gerarchia e il valore
+            BMWP.</span
+          >
+        </button>
+
+        <div id="submenuOrdini" class="submenu-box">
+          <p
+            style="
+              margin: 0 0 12px 0;
+              font-size: 0.85rem;
+              font-weight: 700;
+              color: #334155;
+            "
+          >
+            Seleziona la categoria e l'ordine target:
+          </p>
+
+          <div
+            class="submenu-category-title"
+            style="color: var(--primary-fluviale)"
+          >
+            <svg
+              style="width: 16px; height: 16px"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M11 3a1 1 0 10-2 0v1a1 1 0 102 0V3zM5.879 4.879a1 1 0 00-1.414 1.414l.707.707a1 1 0 001.414-1.414l-.707-.707zm11.314 2.122a1 1 0 00-1.414-1.414l-.707.707a1 1 0 001.414 1.414l.707-.707zM5 10a1 1 0 011-1h1a1 1 0 110 2H6a1 1 0 01-1-1zm12.5.5a.5.5 0 01-.5-.5H16a1 1 0 110-2h1a1 1 0 010 2zm-8.02 3.475a1 1 0 00-1.12.358l-.7 1a1 1 0 001.64 1.15l.7-1a1 1 0 00-.52-1.508zM16.24 16.24a1 1 0 00-1.414 0l-.707.707a1 1 0 001.414 1.414l.707-.707a1 1 0 000-1.414z"
+                clip-rule="evenodd"
+              ></path>
+            </svg>
+            Ordini Fluviali
+          </div>
+          <div id="orderGridFluviali" class="order-grid"></div>
+
+          <div
+            class="submenu-category-title"
+            style="color: var(--primary-suolo)"
+          >
+            <svg
+              style="width: 16px; height: 16px"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+            >
+              <path
+                d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z"
+              ></path>
+            </svg>
+            Gruppi del Suolo
+          </div>
+          <div id="orderGridSuolo" class="order-grid"></div>
+        </div>
+
+        <div class="menu-section-title">Esame Finale</div>
+
+        <button class="level-btn" onclick="avviaLivello(3)">
+          Livello 3 — Esame Completo (Tutto Insieme)
+          <span
+            >Simulazione totale mista: Identificazione del rango preciso,
+            superiori e indice BMWP.</span
+          >
+        </button>
+      </div>
+
+      <div id="gameArea" style="display: none">
+        <div class="game-header">
+          <button class="back-btn" onclick="tornaAlMenu()">← Menu</button>
+          <div id="levelBadge" class="type-badge badge-level"></div>
+          <div id="typeBadge" class="type-badge"></div>
+        </div>
+
+        <div class="image-box" id="imageBox">
+          <img
+            id="taxonImage"
+            src=""
+            alt="Immagine taxon diagnostico"
+            onerror="gestisciErroreImmagine()"
+          />
+        </div>
+
+        <form id="quizForm" onsubmit="verificaRisposta(event)">
+          <div id="dynamicFields"></div>
+          <button type="submit" class="btn btn-check">
+            Verifica Risposta (Invio)
+          </button>
+        </form>
+
+        <button onclick="caricaNuovaCarta()" class="btn btn-next">
+          Genera Nuova Flashcard
+        </button>
+
+        <div id="feedback"></div>
+
+        <div class="stats-panel">
+          <span
+            >Risposte Esatte:
+            <b id="statCorrect" style="color: #10b981">0</b></span
+          >
+          <span
+            >Risposte Errate:
+            <b id="statWrong" style="color: #ef4444">0</b></span
+          >
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const datasetTassonomico = [
+        // --- FAUNA FLUVIALE: EFEMEROTTERI ---
+        {
+          habitat: "fluviale",
+          tipo_preciso: "Genere",
+          val_preciso: "Baetis",
+          tipo_sup1: "Famiglia",
+          val_sup1: "Baetidae",
+          tipo_sup2: "Ordine",
+          val_sup2: "Ephemeroptera",
+          bmwp: "4",
+          immagine: ["Efemerotteri/Baetis1.jpg", "Efemerotteri/Baetis2.jpg"],
+        },
+        {
+          habitat: "fluviale",
+          tipo_preciso: "Genere",
+          val_preciso: "Ecdyonurus",
+          tipo_sup1: "Famiglia",
+          val_sup1: "Heptageniidae",
+          tipo_sup2: "Ordine",
+          val_sup2: "Ephemeroptera",
+          bmwp: "10",
+          immagine: "Efemerotteri/Edcyonurus.jpg",
+        },
+        {
+          habitat: "fluviale",
+          tipo_preciso: "Genere",
+          val_preciso: "Epeorus",
+          tipo_sup1: "Famiglia",
+          val_sup1: "Heptageniidae",
+          tipo_sup2: "Ordine",
+          val_sup2: "Ephemeroptera",
+          bmwp: "10",
+          immagine: "Efemerotteri/Epeorus.jpg",
+        },
+        {
+          habitat: "fluviale",
+          tipo_preciso: "Genere",
+          val_preciso: "Habroleptoides",
+          tipo_sup1: "Famiglia",
+          val_sup1: "Leptophlebiidae",
+          tipo_sup2: "Ordine",
+          val_sup2: "Ephemeroptera",
+          bmwp: "10",
+          immagine: [
+            "Efemerotteri/Habroleptoides1.jpg",
+            "Efemerotteri/Habroleptoides2.jpg",
+          ],
+        },
+        {
+          habitat: "fluviale",
+          tipo_preciso: "Genere",
+          val_preciso: "Serratella",
+          tipo_sup1: "Famiglia",
+          val_sup1: "Ephemerellidae",
+          tipo_sup2: "Ordine",
+          val_sup2: "Ephemeroptera",
+          bmwp: "10",
+          immagine: [
+            "Efemerotteri/Serratella1.jpg",
+            "Efemerotteri/Serratella2.jpg",
+          ],
+        },
+
+        // --- FAUNA FLUVIALE: PLECOTTERI ---
+        {
+          habitat: "fluviale",
+          tipo_preciso: "Genere",
+          val_preciso: "Amphinemura",
+          tipo_sup1: "Famiglia",
+          val_sup1: "Nemouridae",
+          tipo_sup2: "Ordine",
+          val_sup2: "Plecoptera",
+          bmwp: "7",
+          immagine: [
+            "Plecotteri/Amphinemura1.jpg",
+            "Plecotteri/Amphinemura2.jpg",
+          ],
+        },
+        {
+          habitat: "fluviale",
+          tipo_preciso: "Genere",
+          val_preciso: "Brachyptera",
+          tipo_sup1: "Famiglia",
+          val_sup1: "Taeniopterygidae",
+          tipo_sup2: "Ordine",
+          val_sup2: "Plecoptera",
+          bmwp: "10",
+          immagine: "Plecotteri/Brachyptera.jpg",
+        },
+        {
+          habitat: "fluviale",
+          tipo_preciso: "Genere",
+          val_preciso: "Isoperla",
+          tipo_sup1: "Famiglia",
+          val_sup1: "Perlodidae",
+          tipo_sup2: "Ordine",
+          val_sup2: "Plecoptera",
+          bmwp: "10",
+          immagine: ["Plecotteri/Isoperla1.jpg", "Plecotteri/Isoperla2.jpg"],
+        },
+        {
+          habitat: "fluviale",
+          tipo_preciso: "Genere",
+          val_preciso: "Leuctra",
+          tipo_sup1: "Famiglia",
+          val_sup1: "Leuctridae",
+          tipo_sup2: "Ordine",
+          val_sup2: "Plecoptera",
+          bmwp: "10",
+          immagine: ["Plecotteri/Leuctra1.jpg", "Plecotteri/Leuctra2.jpg"],
+        },
+        {
+          habitat: "fluviale",
+          tipo_preciso: "Genere",
+          val_preciso: "Nemoura",
+          tipo_sup1: "Famiglia",
+          val_sup1: "Nemouridae",
+          tipo_sup2: "Ordine",
+          val_sup2: "Plecoptera",
+          bmwp: "7",
+          immagine: ["Plecotteri/Nemoura1.jpg", "Plecotteri/Nemoura2.jpg"],
+        },
+        {
+          habitat: "fluviale",
+          tipo_preciso: "Genere",
+          val_preciso: "Perla",
+          tipo_sup1: "Famiglia",
+          val_sup1: "Perlidae",
+          tipo_sup2: "Ordine",
+          val_sup2: "Plecoptera",
+          bmwp: "10",
+          immagine: ["Plecotteri/Perla1.jpg", "Plecotteri/Perla2.jpg"],
+        },
+        {
+          habitat: "fluviale",
+          tipo_preciso: "Genere",
+          val_preciso: "Protonemura",
+          tipo_sup1: "Famiglia",
+          val_sup1: "Nemouridae",
+          tipo_sup2: "Ordine",
+          val_sup2: "Plecoptera",
+          bmwp: "7",
+          immagine: [
+            "Plecotteri/Protonemura1.jpg",
+            "Plecotteri/Protonemura2.jpg",
+          ],
+        },
+
+        // --- FAUNA FLUVIALE: TRICOTTERI ---
+        {
+          habitat: "fluviale",
+          tipo_preciso: "Famiglia",
+          val_preciso: "Goeridae",
+          tipo_sup1: "Ordine",
+          val_sup1: "Trichoptera",
+          tipo_sup2: "Classe",
+          val_sup2: "Insecta",
+          bmwp: "10",
+          immagine: ["Tricotteri/Goeridae1.jpg", "Tricotteri/Goeridae2.jpg"],
+        },
+        {
+          habitat: "fluviale",
+          tipo_preciso: "Famiglia",
+          val_preciso: "Hydropsychidae",
+          tipo_sup1: "Ordine",
+          val_sup1: "Trichoptera",
+          tipo_sup2: "Classe",
+          val_sup2: "Insecta",
+          bmwp: "5",
+          immagine: [
+            "Tricotteri/Hydropsychidae1.jpg",
+            "Tricotteri/Hycropsychidae2.jpg",
+          ],
+        },
+        {
+          habitat: "fluviale",
+          tipo_preciso: "Famiglia",
+          val_preciso: "Lepidostomatidae",
+          tipo_sup1: "Ordine",
+          val_sup1: "Trichoptera",
+          tipo_sup2: "Classe",
+          val_sup2: "Insecta",
+          bmwp: "10",
+          immagine: [
+            "Tricotteri/Lepidostomatidae1.jpg",
+            "Tricotteri/Lepidostomatidae2.jpg",
+          ],
+        },
+        {
+          habitat: "fluviale",
+          tipo_preciso: "Famiglia",
+          val_preciso: "Limnephilidae",
+          tipo_sup1: "Ordine",
+          val_sup1: "Trichoptera",
+          tipo_sup2: "Classe",
+          val_sup2: "Insecta",
+          bmwp: "7",
+          immagine: [
+            "Tricotteri/Limnephilidae1.jpg",
+            "Tricotteri/Limnephilidae2.jpg",
+          ],
+        },
+        {
+          habitat: "fluviale",
+          tipo_preciso: "Famiglia",
+          val_preciso: "Philopotamidae",
+          tipo_sup1: "Ordine",
+          val_sup1: "Trichoptera",
+          tipo_sup2: "Classe",
+          val_sup2: "Insecta",
+          bmwp: "8",
+          immagine: [
+            "Tricotteri/Philopotamidae1.jpg",
+            "Tricotteri/Philpotamidae2.jpg",
+          ],
+        },
+        {
+          habitat: "fluviale",
+          tipo_preciso: "Famiglia",
+          val_preciso: "Rhyacophilidae",
+          tipo_sup1: "Ordine",
+          val_sup1: "Trichoptera",
+          tipo_sup2: "Classe",
+          val_sup2: "Insecta",
+          bmwp: "7",
+          immagine: [
+            "Tricotteri/Rhyacophilidae1.jpg",
+            "Tricotteri/Rhyacophilidae2.jpg",
+          ],
+        },
+
+        // --- FAUNA FLUVIALE: ODONATI ---
+        {
+          habitat: "fluviale",
+          tipo_preciso: "Genere",
+          val_preciso: "Calopteryx",
+          tipo_sup1: "Famiglia",
+          val_sup1: "Calopterygidae",
+          tipo_sup2: "Sottordine",
+          val_sup2: "Zygoptera",
+          bmwp: "8",
+          immagine: ["Odonati/Calopteryx1.jpg", "Odonati/Calopteryx2.jpg"],
+        },
+        {
+          habitat: "fluviale",
+          tipo_preciso: "Genere",
+          val_preciso: "Onychogomphus",
+          tipo_sup1: "Famiglia",
+          val_sup1: "Gomphidae",
+          tipo_sup2: "Sottordine",
+          val_sup2: "Anisoptera",
+          bmwp: "8",
+          immagine: [
+            "Odonati/Onychogomphus1.jpg",
+            "Odonati/Onychogomphus2.jpg",
+          ],
+        },
+
+        // --- FAUNA FLUVIALE: DITTERI ---
+        {
+          habitat: "fluviale",
+          tipo_preciso: "Famiglia",
+          val_preciso: "Athericidae",
+          tipo_sup1: "Ordine",
+          val_sup1: "Diptera",
+          tipo_sup2: "Classe",
+          val_sup2: "Insecta",
+          bmwp: "/",
+          immagine: "Ditteri/Athericidae.jpg",
+        },
+        {
+          habitat: "fluviale",
+          tipo_preciso: "Famiglia",
+          val_preciso: "Chironomidae",
+          tipo_sup1: "Ordine",
+          val_sup1: "Diptera",
+          tipo_sup2: "Classe",
+          val_sup2: "Insecta",
+          bmwp: "2",
+          immagine: "Ditteri/Chironomidae.jpg",
+        },
+        {
+          habitat: "fluviale",
+          tipo_preciso: "Famiglia",
+          val_preciso: "Simuliidae",
+          tipo_sup1: "Ordine",
+          val_sup1: "Diptera",
+          tipo_sup2: "Classe",
+          val_sup2: "Insecta",
+          bmwp: "5",
+          immagine: "Ditteri/Simuliidae.jpg",
+        },
+        {
+          habitat: "fluviale",
+          tipo_preciso: "Famiglia",
+          val_preciso: "Tabanidae",
+          tipo_sup1: "Ordine",
+          val_sup1: "Diptera",
+          tipo_sup2: "Classe",
+          val_sup2: "Insecta",
+          bmwp: "/",
+          immagine: "Ditteri/Tabanidae.jpg",
+        },
+        {
+          habitat: "fluviale",
+          tipo_preciso: "Famiglia",
+          val_preciso: "Tipulidae",
+          tipo_sup1: "Ordine",
+          val_sup1: "Diptera",
+          tipo_sup2: "Classe",
+          val_sup2: "Insecta",
+          bmwp: "5",
+          immagine: "Ditteri/Tipulidae.jpg",
+        },
+
+        // --- FAUNA FLUVIALE: COLEOTTERI, EMITTERI E MOLLUSCHI ---
+        {
+          habitat: "fluviale",
+          tipo_preciso: "Famiglia",
+          val_preciso: "Elmidae",
+          tipo_sup1: "Ordine",
+          val_sup1: "Coleoptera",
+          tipo_sup2: "Classe",
+          val_sup2: "Insecta",
+          bmwp: "5",
+          immagine: ["Coleotteri/Elmidae1.jpg", "Coleotteri/Elmidae2.jpg"],
+        },
+        {
+          habitat: "fluviale",
+          tipo_preciso: "Famiglia",
+          val_preciso: "Gyrinidae",
+          tipo_sup1: "Ordine",
+          val_sup1: "Coleoptera",
+          tipo_sup2: "Classe",
+          val_sup2: "Insecta",
+          bmwp: "5",
+          immagine: "Coleotteri/Gyrinidae.jpg",
+        },
+        {
+          habitat: "fluviale",
+          tipo_preciso: "Famiglia",
+          val_preciso: "Nepidae",
+          tipo_sup1: "Sottordine",
+          val_sup1: "Heteroptera",
+          tipo_sup2: "Ordine",
+          val_sup2: "Hemiptera/Rynchota",
+          bmwp: "5",
+          immagine: "Coleotteri/Nepidae.jpg",
+        },
+        {
+          habitat: "fluviale",
+          tipo_preciso: "Famiglia",
+          val_preciso: "Physidae",
+          tipo_sup1: "Classe",
+          val_sup1: "Gastropoda",
+          tipo_sup2: "Phylum",
+          val_sup2: "Mollusca",
+          bmwp: "3",
+          immagine: "Coleotteri/Physidae.jpg",
+        },
+
+        // --- FAUNA DEL SUOLO ---
+        {
+          habitat: "suolo",
+          tipo_preciso: "Ordine",
+          val_preciso: "Collembola",
+          tipo_sup1: "Classe",
+          val_sup1: "Entognatha",
+          tipo_sup2: "Subphylum",
+          val_sup2: "Hexapoda",
+          immagine: "",
+        },
+        {
+          habitat: "suolo",
+          tipo_preciso: "Ordine",
+          val_preciso: "Protura",
+          tipo_sup1: "Classe",
+          val_sup1: "Entognatha",
+          tipo_sup2: "Subphylum",
+          val_sup2: "Hexapoda",
+          immagine: "",
+        },
+        {
+          habitat: "suolo",
+          tipo_preciso: "Ordine",
+          val_preciso: "Dipluri",
+          tipo_sup1: "Classe",
+          val_sup1: "Entognatha",
+          tipo_sup2: "Subphylum",
+          val_sup2: "Hexapoda",
+          immagine: "",
+        },
+        {
+          habitat: "suolo",
+          tipo_preciso: "Ordine",
+          val_preciso: "Larve ditteri",
+          tipo_sup1: "Classe",
+          val_sup1: "Insecta",
+          tipo_sup2: "Subphylum",
+          val_sup2: "Hexapoda",
+          immagine: "",
+        },
+        {
+          habitat: "suolo",
+          tipo_preciso: "Ordine",
+          val_preciso: "Larve Coleoptera",
+          tipo_sup1: "Classe",
+          val_sup1: "Insecta",
+          tipo_sup2: "Subphylum",
+          val_sup2: "Hexapoda",
+          immagine: "",
+        },
+        {
+          habitat: "suolo",
+          tipo_preciso: "Classe",
+          val_preciso: "Chilopodi",
+          tipo_sup1: "Subphylum",
+          val_sup1: "Myriapoda",
+          tipo_sup2: "Phylum",
+          val_sup2: "Arthropoda",
+          immagine: "",
+        },
+        {
+          habitat: "suolo",
+          tipo_preciso: "Classe",
+          val_preciso: "Diplopodi",
+          tipo_sup1: "Subphylum",
+          val_sup1: "Myriapoda",
+          tipo_sup2: "Phylum",
+          val_sup2: "Arthropoda",
+          immagine: "",
+        },
+        {
+          habitat: "suolo",
+          tipo_preciso: "Classe",
+          val_preciso: "Pauropodi",
+          tipo_sup1: "Subphylum",
+          val_sup1: "Myriapoda",
+          tipo_sup2: "Phylum",
+          val_sup2: "Arthropoda",
+          immagine: "",
+        },
+        {
+          habitat: "suolo",
+          tipo_preciso: "Classe",
+          val_preciso: "Symphila",
+          tipo_sup1: "Subphylum",
+          val_sup1: "Myriapoda",
+          tipo_sup2: "Phylum",
+          val_sup2: "Arthropoda",
+          immagine: "",
+        },
+        {
+          habitat: "suolo",
+          tipo_preciso: "Ordine",
+          val_preciso: "Isopoda",
+          tipo_sup1: "Classe",
+          val_sup1: "Malacostraca",
+          tipo_sup2: "Subphylum",
+          val_sup2: "Crustacea",
+          immagine: "",
+        },
+        {
+          habitat: "suolo",
+          tipo_preciso: "Infraclasse",
+          val_preciso: "Acari",
+          tipo_sup1: "Classe",
+          val_sup1: "Arachnida",
+          tipo_sup2: "Subphylum",
+          val_sup2: "Chelicerata",
+          immagine: "",
+        },
+        {
+          habitat: "suolo",
+          tipo_preciso: "Ordine",
+          val_preciso: "Pseudoscorpiones",
+          tipo_sup1: "Classe",
+          val_sup1: "Arachnida",
+          tipo_sup2: "Subphylum",
+          val_sup2: "Chelicerata",
+          immagine: "",
+        },
+      ];
+
+      let livelloCorrente = 1;
+      let habitatSelezionatoLivello1 = ""; // "fluviale" o "suolo"
+      let sottomassaCarte = [];
+      let cartaCorrente = null;
+      let ordineSelezionatoLivello2 = "";
+
+      // Statistiche sessione
+      let statCorrectCount = 0;
+      let statWrongCount = 0;
+
+      // Restituisce l'ordine o gruppo principale di riferimento (Level 1) di una determinata scheda
+      function ottieniGruppoLivello1(carta) {
+        if (carta.tipo_preciso === "Ordine") return carta.val_preciso;
+        if (carta.tipo_sup1 === "Ordine") return carta.val_sup1;
+        if (carta.tipo_sup2 === "Ordine") return carta.val_sup2;
+
+        if (carta.tipo_preciso === "Sottordine") return carta.val_preciso;
+        if (carta.tipo_sup1 === "Sottordine") return carta.val_sup1;
+        if (carta.tipo_sup2 === "Sottordine") return carta.val_sup2;
+
+        if (carta.tipo_preciso === "Classe") return carta.val_preciso;
+        if (carta.tipo_sup1 === "Classe") return carta.val_sup1;
+        if (carta.tipo_sup2 === "Classe") return carta.val_sup2;
+
+        if (carta.tipo_preciso === "Infraclasse") return carta.val_preciso;
+        if (carta.tipo_sup1 === "Infraclasse") return carta.val_sup1;
+        if (carta.tipo_sup2 === "Infraclasse") return carta.val_sup2;
+
+        return carta.val_preciso; // fallback sicuro
+      }
+
+      // Estrae la lista dei gruppi per popolare i sottomenu e i menu a tendina
+      function inizializzaMenuOrdini() {
+        const setFluviali = new Set();
+        const setSuolo = new Set();
+
+        datasetTassonomico.forEach((c) => {
+          const gruppo = ottieniGruppoLivello1(c);
+          if (c.habitat === "fluviale") {
+            setFluviali.add(gruppo);
+          } else {
+            setSuolo.add(gruppo);
+          }
+        });
+
+        const arrayFluviali = Array.from(setFluviali).sort();
+        const arraySuolo = Array.from(setSuolo).sort();
+
+        // Genera la griglia dei pulsanti fluviali
+        const gridFluviali = document.getElementById("orderGridFluviali");
+        gridFluviali.innerHTML = "";
+        arrayFluviali.forEach((ordine) => {
+          const btn = document.createElement("button");
+          btn.className = "order-btn fluviale-item";
+          btn.innerText = ordine;
+          btn.onclick = () => avviaLivello2ConOrdine(ordine, "fluviale");
+          gridFluviali.appendChild(btn);
+        });
+
+        // Genera la griglia dei pulsanti del suolo
+        const gridSuolo = document.getElementById("orderGridSuolo");
+        gridSuolo.innerHTML = "";
+        arraySuolo.forEach((ordine) => {
+          const btn = document.createElement("button");
+          btn.className = "order-btn suolo-item";
+          btn.innerText = ordine;
+          btn.onclick = () => avviaLivello2ConOrdine(ordine, "suolo");
+          gridSuolo.appendChild(btn);
+        });
+      }
+
+      function mostraSubmenuOrdini() {
+        const submenu = document.getElementById("submenuOrdini");
+        submenu.style.display =
+          submenu.style.display === "block" ? "none" : "block";
+      }
+
+      function avviaLivello1(habitat) {
+        livelloCorrente = 1;
+        habitatSelezionatoLivello1 = habitat;
+
+        document.getElementById("mainMenu").style.display = "none";
+        document.getElementById("gameArea").style.display = "block";
+
+        const labelHabitat = habitat.charAt(0).toUpperCase() + habitat.slice(1);
+        document.getElementById("levelBadge").innerText =
+          `Lvl 1: Ordini ${labelHabitat}`;
+
+        sottomassaCarte = datasetTassonomico.filter(
+          (c) => c.habitat === habitat,
+        );
+        caricaNuovaCarta();
+      }
+
+      function avviaLivello(livello) {
+        if (livello === 1 || livello === 2) return; // Gestiti separatamente
+
+        livelloCorrente = livello;
+        document.getElementById("mainMenu").style.display = "none";
+        document.getElementById("gameArea").style.display = "block";
+        document.getElementById("levelBadge").innerText = `Livello 3`;
+
+        sottomassaCarte = [...datasetTassonomico];
+        caricaNuovaCarta();
+      }
+
+      function avviaLivello2ConOrdine(ordine, habitat) {
+        livelloCorrente = 2;
+        ordineSelezionatoLivello2 = ordine;
+
+        document.getElementById("mainMenu").style.display = "none";
+        document.getElementById("submenuOrdini").style.display = "none";
+        document.getElementById("gameArea").style.display = "block";
+
+        const labelHabitat = habitat.charAt(0).toUpperCase() + habitat.slice(1);
+        document.getElementById("levelBadge").innerText =
+          `Lvl 2: ${ordine} (${labelHabitat})`;
+
+        // Filtra le carte che corrispondono biologicanente a questo gruppo
+        sottomassaCarte = datasetTassonomico.filter(
+          (c) => ottieniGruppoLivello1(c) === ordine,
+        );
+
+        caricaNuovaCarta();
+      }
+
+      function tornaAlMenu() {
+        document.getElementById("gameArea").style.display = "none";
+        document.getElementById("mainMenu").style.display = "block";
+        document.getElementById("feedback").style.display = "none";
+      }
+
+      function gestisciErroreImmagine() {
+        const imgEl = document.getElementById("taxonImage");
+        const imgBox = document.getElementById("imageBox");
+
+        // Sostituiamo l'immagine fallita con un elemento placeholder elegante
+        imgBox.innerHTML = `
+          <div class="placeholder-container">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/>
+              <polyline points="14 2 14 8 20 8"/>
+              <circle cx="10" cy="13" r="2"/>
+              <path d="m20 17-1.12-1.12a2 2 0 0 0-2.83 0L12 20"/>
+            </svg>
+            <span>Nessuna foto a microscopio disponibile</span>
+            <small style="margin-top:4px; opacity:0.7">${cartaCorrente.val_preciso} (${cartaCorrente.habitat})</small>
+          </div>
+        `;
+      }
+
+      function caricaNuovaCarta() {
+        document.getElementById("feedback").style.display = "none";
+
+        if (sottomassaCarte.length === 0) {
+          alert("Nessun taxon disponibile per questa selezione!");
+          tornaAlMenu();
+          return;
+        }
+
+        const indice = Math.floor(Math.random() * sottomassaCarte.length);
+        cartaCorrente = sottomassaCarte[indice];
+
+        const badge = document.getElementById("typeBadge");
+
+        // Ripristina l'imageBox nel caso fosse stato inserito l'SVG di errore
+        const imgBox = document.getElementById("imageBox");
+        imgBox.innerHTML = `<img id="taxonImage" src="" alt="Immagine taxon diagnostico" onerror="gestisciErroreImmagine()" />`;
+        const imgEl = document.getElementById("taxonImage");
+
+        badge.innerText =
+          cartaCorrente.habitat === "fluviale" ? "Fluviale" : "Suolo";
+        badge.className = `type-badge ${cartaCorrente.habitat === "fluviale" ? "badge-fluviale" : "badge-suolo"}`;
+
+        let percorsoImmagine = cartaCorrente.immagine;
+        if (Array.isArray(percorsoImmagine)) {
+          const idxImg = Math.floor(Math.random() * percorsoImmagine.length);
+          percorsoImmagine = percorsoImmagine[idxImg];
+        }
+
+        imgEl.src = percorsoImmagine || "";
+
+        const containerCampi = document.getElementById("dynamicFields");
+        containerCampi.innerHTML = "";
+
+        if (livelloCorrente === 1) {
+          // LIVELLO 1: INPUT SELECT PER ORDINI IN BASE ALL'HABITAT SCELTO
+          const setGruppi = new Set();
+          datasetTassonomico.forEach((c) => {
+            if (c.habitat === habitatSelezionatoLivello1) {
+              setGruppi.add(ottieniGruppoLivello1(c));
+            }
+          });
+          const arrayOpzioni = Array.from(setGruppi).sort();
+
+          let opzioniSelect = `<option value="">-- Seleziona l'Ordine/Gruppo --</option>`;
+          arrayOpzioni.forEach((gruppo) => {
+            opzioniSelect += `<option value="${gruppo}">${gruppo}</option>`;
+          });
+
+          containerCampi.innerHTML = `
+            <div class="input-group">
+                <label for="selectOrdine">Ordine/Gruppo del Taxon</label>
+                <select id="selectOrdine" required>${opzioniSelect}</select>
+            </div>
+          `;
+        } else if (livelloCorrente === 2 || livelloCorrente === 3) {
+          // LIVELLO 2 E 3: IDENTICA COMPILAZIONE COMPLETA (Rango preciso, sup 1, sup 2 e BMWP)
+          let htmlCampi = `
+            <div class="input-group">
+                <label for="inputTarget">Rango più preciso <span>(${cartaCorrente.tipo_preciso})</span></label>
+                <input type="text" id="inputTarget" autocomplete="off" required placeholder="">
+            </div>
+            <div class="input-group">
+                <label for="inputSup1">Rango Superiore 1 <span>(${cartaCorrente.tipo_sup1})</span></label>
+                <input type="text" id="inputSup1" autocomplete="off" required placeholder="">
+            </div>
+            <div class="input-group">
+                <label for="inputSup2">Rango Superiore 2 <span>(${cartaCorrente.tipo_sup2})</span></label>
+                <input type="text" id="inputSup2" autocomplete="off" required placeholder="">
+            </div>
+          `;
+
+          if (cartaCorrente.habitat === "fluviale") {
+            htmlCampi += `
+              <div class="input-group">
+                  <label for="inputBmwp">Punteggio BMWP</label>
+                  <input type="text" id="inputBmwp" autocomplete="off" required placeholder="">
+              </div>
+            `;
+          }
+          containerCampi.innerHTML = htmlCampi;
+        }
+
+        setTimeout(() => {
+          const primoInput = containerCampi.querySelector("input, select");
+          if (primoInput) primoInput.focus();
+        }, 50);
+      }
+
+      function verificaRisposta(event) {
+        event.preventDefault();
+        const feedback = document.getElementById("feedback");
+        feedback.style.display = "block";
+
+        const correctTarget = cartaCorrente.val_preciso.trim().toLowerCase();
+        const correctSup1 = cartaCorrente.val_sup1.trim().toLowerCase();
+        const correctSup2 = cartaCorrente.val_sup2.trim().toLowerCase();
+        const correctOrdine = ottieniGruppoLivello1(cartaCorrente);
+
+        if (livelloCorrente === 1) {
+          const userSelect = document
+            .getElementById("selectOrdine")
+            .value.trim()
+            .toLowerCase();
+
+          if (userSelect === correctOrdine.toLowerCase()) {
+            aggiornaStatistiche(true);
+            feedback.className = "correct";
+            feedback.innerHTML = `Esatto! L'ordine/gruppo corretto è <b>${correctOrdine}</b>. 🎉`;
+          } else {
+            aggiornaStatistiche(false);
+            feedback.className = "wrong";
+            feedback.innerHTML = `<b>Errore!</b><br>Ordine corretto: <b>${correctOrdine}</b>.`;
+          }
+        } else if (livelloCorrente === 2 || livelloCorrente === 3) {
+          const userTarget = document
+            .getElementById("inputTarget")
+            .value.trim()
+            .toLowerCase();
+          const userSup1 = document
+            .getElementById("inputSup1")
+            .value.trim()
+            .toLowerCase();
+          const userSup2 = document
+            .getElementById("inputSup2")
+            .value.trim()
+            .toLowerCase();
+
+          let rispCorretta =
+            userTarget === correctTarget &&
+            userSup1 === correctSup1 &&
+            userSup2 === correctSup2;
+
+          let userBmwp = "";
+          let bmwpError = false;
+
+          if (cartaCorrente.habitat === "fluviale") {
+            userBmwp = document
+              .getElementById("inputBmwp")
+              .value.trim()
+              .toLowerCase();
+            if (userBmwp !== cartaCorrente.bmwp.toLowerCase()) {
+              rispCorretta = false;
+              bmwpError = true;
+            }
+          }
+
+          if (rispCorretta) {
+            aggiornaStatistiche(true);
+            feedback.className = "correct";
+            feedback.innerHTML = `Ottimo! Taxon identificato perfettamente in ogni rango tassonomico! 🔬`;
+          } else {
+            aggiornaStatistiche(false);
+            feedback.className = "wrong";
+            let erroreHtml = `<strong>Determinazione Errata!</strong> Ecco la tassonomia corretta:<br><br>
+                         • ${cartaCorrente.tipo_preciso}: <b style="color:#065f46">${cartaCorrente.val_preciso}</b> (tu: <i>${userTarget || "vuoto"}</i>)<br>
+                         • ${cartaCorrente.tipo_sup1}: <b style="color:#065f46">${cartaCorrente.val_sup1}</b> (tu: <i>${userSup1 || "vuoto"}</i>)<br>
+                         • ${cartaCorrente.tipo_sup2}: <b style="color:#065f46">${cartaCorrente.val_sup2}</b> (tu: <i>${userSup2 || "vuoto"}</i>)`;
+
+            if (cartaCorrente.habitat === "fluviale") {
+              const stileBmwp = bmwpError ? "color:#ef4444" : "color:#065f46";
+              erroreHtml += `<br>• Punteggio BMWP: <b style="${stileBmwp}">${cartaCorrente.bmwp}</b> (tu: <i>${userBmwp || "vuoto"}</i>)`;
+            }
+            feedback.innerHTML = erroreHtml;
+          }
+        }
+      }
+
+      function aggiornaStatistiche(esito) {
+        if (esito) {
+          statCorrectCount++;
+          document.getElementById("statCorrect").innerText = statCorrectCount;
+        } else {
+          statWrongCount++;
+          document.getElementById("statWrong").innerText = statWrongCount;
+        }
+      }
+
+      window.onload = function () {
+        inizializzaMenuOrdini();
+      };
+    </script>
+  </body>
+</html>
