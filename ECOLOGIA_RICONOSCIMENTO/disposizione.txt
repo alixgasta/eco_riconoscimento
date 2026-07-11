@@ -1,0 +1,65 @@
+Elenco del percorso delle cartelle per il volume Acer
+Numero di serie del volume: 00000052-BEDE:2247
+C:.
+|   disposizione.txt
+|   ecologia_riconoscimento.html
+|   
++---Coleotteri
+|       Elmidae1.jpg
+|       Elmidae2.jpg
+|       Gyrinidae.jpg
+|       Nepidae.jpg
+|       Physidae.jpg
+|       
++---Ditteri
+|       Athericidae.jpg
+|       Chironomidae.jpg
+|       Simuliidae.jpg
+|       Tabanidae.jpg
+|       Tipulidae.jpg
+|       
++---Efemerotteri
+|       Baetis1.jpg
+|       Baetis2.jpg
+|       Edcyonurus.jpg
+|       Epeorus.jpg
+|       Habroleptoides1.jpg
+|       Habroleptoides2.jpg
+|       Serratella1.jpg
+|       Serratella2.jpg
+|       
++---Odonati
+|       Calopteryx1.jpg
+|       Calopteryx2.jpg
+|       Onychogomphus1.jpg
+|       Onychogomphus2.jpg
+|       
++---Plecotteri
+|       Amphinemura1.jpg
+|       Amphinemura2.jpg
+|       Brachyptera.jpg
+|       Isoperla1.jpg
+|       Isoperla2.jpg
+|       Leuctra1.jpg
+|       Leuctra2.jpg
+|       Nemoura1.jpg
+|       Nemoura2.jpg
+|       Perla1.jpg
+|       Perla2.jpg
+|       Protonemura1.jpg
+|       Protonemura2.jpg
+|       
+\---Tricotteri
+        Goeridae1.jpg
+        Goeridae2.jpg
+        Hycropsychidae2.jpg
+        Hydropsychidae1.jpg
+        Lepidostomatidae1.jpg
+        Lepidostomatidae2.jpg
+        Limnephilidae1.jpg
+        Limnephilidae2.jpg
+        Philopotamidae1.jpg
+        Philpotamidae2.jpg
+        Rhyacophilidae1.jpg
+        Rhyacophilidae2.jpg
+        
